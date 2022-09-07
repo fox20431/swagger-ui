@@ -1,0 +1,141 @@
+openapi: 3.0.3
+info:
+  title: EWAY WX-RUN
+  version: 0.4.3
+  description: |-
+    This documentation for EWAY WX-RUN.
+
+servers:
+  - url: https://service.pkuvr.com
+tags:
+  - name: prescriptions
+    description: 处方
+paths:
+  /prescriotions/{userId}: 
+    get: 
+      tags: 
+        - prescriptions
+      summary: 获取用户处方
+      description: 通过用户ID获取用户处方
+      operationId: getPrescriptionByUserId
+      parameters: 
+        - in: path
+          name: userId
+          description: 用户 ID
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: key
+          description: 用户 token
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+  /prescriptions/{userId}/today:
+    get:
+      tags:
+        - prescriptions
+      summary: 获取用户今日运动处方
+      description: 通过用户ID获取用户今日处方
+      operationId: getTodayPrescriptionByUserId
+      parameters: 
+        - in: path
+          name: userId
+          description: 用户 ID
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: key
+          description: 用户 token
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodayPrescription'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/TodayPrescription'
+components: 
+  schemas: 
+    Prescription: 
+      type: array
+      items: 
+        type: object
+        properties: 
+          name:
+            type: string
+            example: 肥胖症
+            description: 处方名称
+          minDuration: 
+            type: number
+            description: 最小周期时间 单位：天
+          maxDuration: 
+            type: number
+            description: 最大周期时间 单位：天
+          minFrequency: 
+            type: number
+            minimum: 0
+            maximum: 7
+            default: 0
+            description: 最小频率 单位：次/周
+          maxFrequency: 
+            type: number
+            minimum: 0
+            maximum: 7
+            default: 0
+            description: 最大频率 单位：次/周
+          intensity: 
+            type: number
+            minimum: 0
+            maximum: 100
+            default: 0
+            description: 运动强度 单位：%
+          progress:
+            type: array
+            description: 所有周的进度
+            items: 
+              type: object
+              properties: 
+                schedule:
+                  type: number
+                  minimum: 0
+                  maximum: 100
+                  default: 0
+                  description: 当前周的进度 单位：%
+    TodayPrescription: 
+      type: array
+      description: 今日运动处方
+      items: 
+        type: object
+        properties: 
+          name: 
+            type: string
+            example: 热身跑
+            description: 处方阶段名称
+          minHr: 
+            type: number
+            description: 最小心率 单位：bpm
+          maxHr:
+            type: number
+            description: 最大心率 单位：bpm
+          aimTime: 
+            type: number
+            description: 目标时长 单位：ms
